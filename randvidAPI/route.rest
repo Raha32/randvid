@@ -1,0 +1,27 @@
+GET http://localhost:3000/videosid
+
+###
+
+GET http://localhost:3000/videosid/627a3e8a5fcdaadee6f3c79e
+
+###
+
+POST http://localhost:3000/videosid
+Content-Type: application/json
+
+{
+    "videoID": "fgTGAD5356g"
+}
+
+###
+
+DELETE http://localhost:3000/videosid/627a3e8a5fcdaadee6f3c791
+
+
+###
+PATCH http://localhost:3000/videosid/627a450e60e6ae0f5a686d53
+Content-Type: application/json
+
+{
+    "videoID": "new ID"
+}
