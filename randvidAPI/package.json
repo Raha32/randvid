@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devstart": "nodemon server.js"
+    "start": "parcel src/index.html",
+    "server": "nodemon server.js "
   },
   "author": "",
   "license": "ISC",
@@ -13,10 +14,21 @@
     "express": "^4.18.1",
     "google-auth-library": "^8.0.2",
     "googleapis": "^100.0.0",
-    "mongoose": "^6.3.2"
+    "mongoose": "^6.3.2",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
     "dotenv": "^16.0.0",
-    "nodemon": "^2.0.16"
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "nodemon": "^2.0.16",
+    "parcel": "^2.5.0",
+    "prettier": "^2.6.2"
   }
 }
