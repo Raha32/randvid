@@ -25,3 +25,7 @@ Content-Type: application/json
 {
     "videoID": "new ID"
 }
+
+###
+
+GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true
