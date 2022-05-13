@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
     try {
         const response = await youtube.search.list({
             part: "snippet",
-            q: "animal cat",
+            q: "animal cat memes funny",
             type: "video",
             videoDuration: "short",
             maxResults:"50",

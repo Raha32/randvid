@@ -1,0 +1,6 @@
+- Random button [V]
+- Removing from the id list the videos that have already been watched
+- If all 50 videos have been watched fetch another list
+- System like or dislike(if you don't have an account you will get a pop up asking you to sign in.)
+- History(if you have an account everything you watch goes to the server)
+- Find a way to ACTUALLY get the youtube id's in the DATABASE
