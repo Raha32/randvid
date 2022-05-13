@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const {google} = require('googleapis');
-const apiKey = "AIzaSyA5xVysG-ze6XOAOnfUCBzhlqRkOO3T550";
+const apiKey = "AIzaSyDROJ8DMpvGgkU2BZaRfHf0tqBRywq4hmk";
 const youtube = google.youtube({
     version: "v3",
     auth: apiKey,
 })
 
-router.get('/', async (req, res) => {
+
+router.get('/', async (req, res, next) => {
     try {
         const response = await youtube.search.list({
             part: "snippet",
-            q: "cat",
+            q: "animal cat",
             type: "video",
             videoDuration: "short",
             maxResults:"50",

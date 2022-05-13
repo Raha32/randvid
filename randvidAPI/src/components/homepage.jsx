@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import "../style/homepage.css";
 import img1 from "../images/more.png";
 import like from "../images/Like.png";
 import dislike from "../images/Dislike.png";
-
+let linkres = "Z10iWqkOlW4";
 let i = 0;
 function btnfunction() {
   if (i <= 0) {
@@ -16,7 +16,37 @@ function btnfunction() {
   }
 }
 
+function randNum(num) {
+  return Math.floor(Math.random() * num);
+}
+
 function Homepage() {
+  const [ids, setIds] = useState([]);
+  const [link, setLink] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("http://localhost:3000/videosid");
+      const jsonRes = await res.json();
+      setIds(jsonRes);
+    };
+    fetchData();
+  }, []);
+
+  const selectRandom = () => {
+    let result = 0;
+    for (i = 0; i < randNum(50); i++) {
+      result = i;
+    }
+    linkres = ids[result];
+    setLink(linkres);
+  };
+
+  function testbutton() {
+    selectRandom();
+    console.log(linkres);
+  }
+
   return (
     <>
       {/*NAVBAR*/}
@@ -70,7 +100,7 @@ function Homepage() {
         <div className="player-wrapper">
           <ReactPlayer
             className="react-player"
-            url="https://www.youtube.com/watch?v=_oaIpAvsEaQ"
+            url={`https://www.youtube.com/watch?v=${linkres}`}
             width="100%"
             height="100%"
             controls={true}
@@ -84,7 +114,7 @@ function Homepage() {
             <li>
               <img src={dislike}></img>
             </li>
-            <p>RANDOM !</p>
+            <p onClick={testbutton}>RANDOM !</p>
           </ul>
         </div>
       </div>
