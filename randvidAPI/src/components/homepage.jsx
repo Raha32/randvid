@@ -4,7 +4,9 @@ import "../style/homepage.css";
 import img1 from "../images/more.png";
 import like from "../images/Like.png";
 import dislike from "../images/Dislike.png";
+//could add a tutorial on how to use randvid but this video seems more fitting
 let linkres = "Z10iWqkOlW4";
+
 let i = 0;
 function btnfunction() {
   if (i <= 0) {
@@ -23,26 +25,62 @@ function randNum(num) {
 function Homepage() {
   const [ids, setIds] = useState([]);
   const [link, setLink] = useState([]);
+  const [localdata, setLocalData] = useState([]);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:3000/videosid");
+      //setting up the video ids
+      const res = await fetch("http://localhost:3000");
       const jsonRes = await res.json();
       setIds(jsonRes);
+      //setting up the local database
+      localStorage.setItem("VideosID", ids);
     };
-    fetchData();
-  }, []);
+
+    const saveHistory = () => {
+      //We add in there the videos that have been watched
+      let historyData = localStorage.getItem("HistoryID");
+      historyData = historyData.split(",");
+      setHistory(historyData);
+    };
+
+    const saveData = () => {
+      //puttin them in localstorage
+      let data = localStorage.getItem("VideosID");
+      data = data.split(",");
+      setLocalData(data);
+    };
+    if (localdata[0] == null) {
+      // if our local database is empty we fetch it from youtube
+      fetchData();
+      saveData();
+      console.log("Fetching data from youtube...");
+    } else {
+      //else we just keep using our local database
+      console.log("Using local data for video id's...");
+    }
+  });
 
   const selectRandom = () => {
     let result = 0;
+    // result is initiazied, we loop it until it reaches a certain number
     for (i = 0; i < randNum(50); i++) {
       result = i;
     }
-    linkres = ids[result];
+    //and we give the string of id it wants
+    linkres = localdata[result];
+    //and we delete it from the local database and add it to our history.
+    let historydata = [];
+    historydata == historydata.push(localdata[result]);
+    console.log(historydata);
+    localStorage.setItem("HistoryID", historydata);
+    console.log("deleted", localdata[result]);
     setLink(linkres);
   };
 
   function testbutton() {
+    //this was supposed to be a test but oh well
     selectRandom();
     console.log(linkres);
   }
