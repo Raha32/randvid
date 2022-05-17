@@ -25103,11 +25103,13 @@ parcelHelpers.defineInteropFlag(exports);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _homepage = require("./components/homepage");
 var _homepageDefault = parcelHelpers.interopDefault(_homepage);
+var _account = require("./components/account");
+var _accountDefault = parcelHelpers.interopDefault(_account);
 function App() {
     return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_jsxDevRuntime.Fragment, {
         children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_homepageDefault.default, {}, void 0, false, {
             fileName: "src/App.jsx",
-            lineNumber: 5,
+            lineNumber: 6,
             columnNumber: 7
         }, this)
     }, void 0, false);
@@ -25122,7 +25124,7 @@ $RefreshReg$(_c, "App");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","./components/homepage":"4i2fd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"4i2fd":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","./components/homepage":"4i2fd","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./components/account":"4yq6z"}],"4i2fd":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$38a4 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -25143,9 +25145,12 @@ var _likePng = require("../images/Like.png");
 var _likePngDefault = parcelHelpers.interopDefault(_likePng);
 var _dislikePng = require("../images/Dislike.png");
 var _dislikePngDefault = parcelHelpers.interopDefault(_dislikePng);
+var _videosidJson = require("./videosid.json");
+var _videosidJsonDefault = parcelHelpers.interopDefault(_videosidJson);
 var _s = $RefreshSig$();
 //could add a tutorial on how to use randvid but this video seems more fitting
 let linkres = "Z10iWqkOlW4";
+//This is just the navbar button for the phone version
 let i = 0;
 function btnfunction() {
     if (i <= 0) {
@@ -25165,20 +25170,28 @@ function Homepage() {
     const [link, setLink] = _react.useState([]);
     const [localdata, setLocalData] = _react.useState([]);
     const [history, setHistory] = _react.useState([]);
+    const [check, setCheck] = _react.useState();
     _react.useEffect(()=>{
+        const resetcheck = ()=>{
+            if (check >= 0) {
+                setCheck(0);
+                console.log("check has been reset");
+            }
+            resetcheck();
+        };
         const fetchData = async ()=>{
             //setting up the video ids
-            const res = await fetch("http://localhost:3000");
+            const res = await fetch("http://localhost:3000/videosid");
             const jsonRes = await res.json();
             setIds(jsonRes);
             //setting up the local database
             localStorage.setItem("VideosID", ids);
         };
-        const saveHistory = ()=>{
-            //We add in there the videos that have been watched
-            let historyData = localStorage.getItem("HistoryID");
-            historyData = historyData.split(",");
-            setHistory(historyData);
+        const localfetchData = ()=>{
+            //setting up the video ids
+            setIds(_videosidJsonDefault.default);
+            //setting up the local database
+            localStorage.setItem("VideosID", ids);
         };
         const saveData = ()=>{
             //puttin them in localstorage
@@ -25186,32 +25199,66 @@ function Homepage() {
             data = data.split(",");
             setLocalData(data);
         };
-        if (localdata[0] == null) {
+        let item = localStorage.getItem("VideosID");
+        if (item.length == 0) {
             // if our local database is empty we fetch it from youtube
             fetchData();
             saveData();
             console.log("Fetching data from youtube...");
-        } else //else we just keep using our local database
-        console.log("Using local data for video id's...");
-    });
+        } else {
+            //else we just keep using our local database
+            localfetchData();
+            saveData();
+            console.log("Using local data for video id's...");
+        }
+        const checkHistory = ()=>{
+            localhistory = localStorage.getItem("HistoryID");
+            if (localhistory != "") {
+                localhistory = localhistory.split(",");
+                setHistory(localhistory);
+            }
+        };
+        checkHistory();
+    }, [
+        check
+    ]);
+    const checklocal = ()=>{
+        let index = 0;
+        if (localStorage.getItem("VideosID").length == 0) {
+            console.log("Local database is now empty");
+            setCheck(index += 1);
+        }
+    };
     const selectRandom = ()=>{
         let result = 0;
         // result is initiazied, we loop it until it reaches a certain number
-        for(i = 0; i < randNum(50); i++)result = i;
+        for(i = 0; i < randNum(localdata.length); i++)result = i;
         //and we give the string of id it wants
         linkres = localdata[result];
         //and we delete it from the local database and add it to our history.
-        let historydata = [];
-        historydata.push(localdata[result]);
-        console.log(historydata);
-        localStorage.setItem("HistoryID", historydata);
-        console.log("deleted", localdata[result]);
+        setLocalData(remove(localdata, linkres));
+        localStorage.setItem("VideosID", localdata);
+        addHistory(localdata[result]);
+        checklocal();
         setLink(linkres);
+    };
+    function remove(arr, value) {
+        return arr.filter(function(ele) {
+            return ele != value;
+        });
+    }
+    const addHistory = (data, tempHistory = [])=>{
+        tempHistory.push(data);
+        setHistory([
+            ...history,
+            ...tempHistory
+        ]);
+        localStorage.setItem("HistoryID", history);
+        localStorage.getItem("HistoryID");
     };
     function testbutton() {
         //this was supposed to be a test but oh well
         selectRandom();
-        console.log(linkres);
     }
     return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_jsxDevRuntime.Fragment, {
         children: [
@@ -25225,7 +25272,7 @@ function Homepage() {
                                     children: "RandVid"
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 94,
+                                    lineNumber: 134,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
@@ -25235,26 +25282,26 @@ function Homepage() {
                                         children: "History"
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 96,
+                                        lineNumber: 136,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 95,
+                                    lineNumber: 135,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
                                     children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
-                                        href: "#Account",
+                                        href: "",
                                         children: "Account"
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 99,
+                                        lineNumber: 139,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 98,
+                                    lineNumber: 138,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
@@ -25264,23 +25311,23 @@ function Homepage() {
                                         children: "Home"
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 102,
+                                        lineNumber: 142,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 101,
+                                    lineNumber: 141,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "src/components/homepage.jsx",
-                            lineNumber: 93,
+                            lineNumber: 133,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/components/homepage.jsx",
-                        lineNumber: 92,
+                        lineNumber: 132,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -25295,14 +25342,14 @@ function Homepage() {
                                         src: _morePngDefault.default
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 111,
+                                        lineNumber: 151,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("h1", {
                                         children: "RandVid"
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 112,
+                                        lineNumber: 152,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -25315,12 +25362,12 @@ function Homepage() {
                                                     children: "History"
                                                 }, void 0, false, {
                                                     fileName: "src/components/homepage.jsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 155,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/homepage.jsx",
-                                                lineNumber: 114,
+                                                lineNumber: 154,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
@@ -25329,12 +25376,12 @@ function Homepage() {
                                                     children: "Account"
                                                 }, void 0, false, {
                                                     fileName: "src/components/homepage.jsx",
-                                                    lineNumber: 118,
+                                                    lineNumber: 158,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/homepage.jsx",
-                                                lineNumber: 117,
+                                                lineNumber: 157,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
@@ -25344,40 +25391,40 @@ function Homepage() {
                                                     children: "Home"
                                                 }, void 0, false, {
                                                     fileName: "src/components/homepage.jsx",
-                                                    lineNumber: 121,
+                                                    lineNumber: 161,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "src/components/homepage.jsx",
-                                                lineNumber: 120,
+                                                lineNumber: 160,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 113,
+                                        lineNumber: 153,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "src/components/homepage.jsx",
-                                lineNumber: 110,
+                                lineNumber: 150,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "src/components/homepage.jsx",
-                            lineNumber: 109,
+                            lineNumber: 149,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/components/homepage.jsx",
-                        lineNumber: 108,
+                        lineNumber: 148,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/components/homepage.jsx",
-                lineNumber: 91,
+                lineNumber: 131,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -25392,19 +25439,19 @@ function Homepage() {
                                     children: "random"
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 135,
+                                    lineNumber: 175,
                                     columnNumber: 23
                                 }, this),
                                 " button to get a random short video !"
                             ]
                         }, void 0, true, {
                             fileName: "src/components/homepage.jsx",
-                            lineNumber: 134,
+                            lineNumber: 174,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/components/homepage.jsx",
-                        lineNumber: 133,
+                        lineNumber: 173,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -25417,12 +25464,12 @@ function Homepage() {
                             controls: true
                         }, void 0, false, {
                             fileName: "src/components/homepage.jsx",
-                            lineNumber: 139,
+                            lineNumber: 179,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/components/homepage.jsx",
-                        lineNumber: 138,
+                        lineNumber: 178,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -25435,12 +25482,12 @@ function Homepage() {
                                         src: _likePngDefault.default
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 150,
+                                        lineNumber: 190,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 149,
+                                    lineNumber: 189,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
@@ -25448,12 +25495,12 @@ function Homepage() {
                                         src: _dislikePngDefault.default
                                     }, void 0, false, {
                                         fileName: "src/components/homepage.jsx",
-                                        lineNumber: 153,
+                                        lineNumber: 193,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 152,
+                                    lineNumber: 192,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -25461,30 +25508,30 @@ function Homepage() {
                                     children: "RANDOM !"
                                 }, void 0, false, {
                                     fileName: "src/components/homepage.jsx",
-                                    lineNumber: 155,
+                                    lineNumber: 195,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "src/components/homepage.jsx",
-                            lineNumber: 148,
+                            lineNumber: 188,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "src/components/homepage.jsx",
-                        lineNumber: 147,
+                        lineNumber: 187,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/components/homepage.jsx",
-                lineNumber: 132,
+                lineNumber: 172,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
 }
-_s(Homepage, "Vic3W7SX36fX3tHuILoyFbmmmRY=");
+_s(Homepage, "Fyjt6zWYz2BY659a12/ABvVbF9E=");
 _c = Homepage;
 exports.default = Homepage;
 var _c;
@@ -25495,7 +25542,7 @@ $RefreshReg$(_c, "Homepage");
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","react-player":"6tM2f","../style/homepage.css":"lvjCu","../images/more.png":"dBBVC","../images/Like.png":"8cLJJ","../images/Dislike.png":"iCZKB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"6tM2f":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","react-player":"6tM2f","../style/homepage.css":"lvjCu","../images/more.png":"dBBVC","../images/Like.png":"8cLJJ","../images/Dislike.png":"iCZKB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru","./videosid.json":"gDzB7"}],"6tM2f":[function(require,module,exports) {
 "use strict";
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -28442,6 +28489,217 @@ function registerExportsForReactRefresh(module) {
     }
 }
 
-},{"react-refresh/runtime":"786KC"}]},["kn9T2","7fmqN","8lqZg"], "8lqZg", "parcelRequirece05")
+},{"react-refresh/runtime":"786KC"}],"gDzB7":[function(require,module,exports) {
+module.exports = JSON.parse("[\"lylpnpNGA14\",\"QJJH0fbYnto\",\"cPb2mHkFwws\",\"zCPyrCwf4_o\",\"y5m2Nj-q8Vs\",\"wOCZWbLtwDs\",\"cSSFNnSnHqI\",\"Q8i2WPxXxS4\",\"1RnIoCtE_Fs\",\"h8WWZ8TTNMk\",\"hYWxW7Hi5fA\",\"m6c9eWSruVE\",\"XAdg3ZC_qRk\",\"rVmV7EMsKRY\",\"CB9U2MOwxnE\",\"PKffm2uI4dk\",\"KxEFfGtbq4w\",\"j1Oegd_pLUk\",\"NABVc21SChk\",\"okZW3_5Gr4s\",\"M-VZipiiyCQ\",\"lh9jfXcrN_g\",\"D5xYM4I-VVc\",\"ob41Lco33Xs\",\"fba5w1Sttb4\",\"02L61jvyxkM\",\"Iyepea_nt8Q\",\"Ku3VpjtzE6w\",\"53XN91WvjQ4\",\"Grf-eOu-MUI\",\"s9wXbBJzk38\",\"8jqdYoGLccs\",\"ndsaoMFz9J4\",\"ov2QVknSggc\",\"YEnAQF3VkoA\",\"J---aiyznGQ\",\"fGO3t8lLwac\",\"BzrH3zCVrXM\",\"pzeSDMPaCuQ\",\"mWLIJ6n1se4\",\"mcSROtruafY\",\"sHMYFlh9DeE\",\"lUHw1x9CvUk\",\"GTkvFXEzPNA\",\"P3jLWyj_2jg\",\"JyBqEBxFkmI\",\"WRUxwXkiLcg\",\"Ii2aKSMb4Lw\",\"-BhwhoCs6Xs\",\"cijXcKxluZ8\"]");
+
+},{}],"4yq6z":[function(require,module,exports) {
+var $parcel$ReactRefreshHelpers$f3bd = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
+var prevRefreshReg = window.$RefreshReg$;
+var prevRefreshSig = window.$RefreshSig$;
+$parcel$ReactRefreshHelpers$f3bd.prelude(module);
+
+try {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _jsxDevRuntime = require("react/jsx-dev-runtime");
+var _react = require("react");
+var _reactDefault = parcelHelpers.interopDefault(_react);
+var _reactPlayer = require("react-player");
+var _reactPlayerDefault = parcelHelpers.interopDefault(_reactPlayer);
+var _homepageCss = require("../style/homepage.css");
+var _morePng = require("../images/more.png");
+var _morePngDefault = parcelHelpers.interopDefault(_morePng);
+var _likePng = require("../images/Like.png");
+var _likePngDefault = parcelHelpers.interopDefault(_likePng);
+var _dislikePng = require("../images/Dislike.png");
+var _dislikePngDefault = parcelHelpers.interopDefault(_dislikePng);
+//NavBar phone button
+let i = 0;
+function btnfunction() {
+    if (i <= 0) {
+        document.getElementById("tdropdown").style.display = "block";
+        i++;
+    } else if (i > 0) {
+        document.getElementById("tdropdown").style.display = "none";
+        i = 0;
+    }
+}
+function account() {
+    return /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_jsxDevRuntime.Fragment, {
+        children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("nav", {
+            children: [
+                /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+                    id: "normnav",
+                    children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("ul", {
+                        children: [
+                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("h1", {
+                                children: "RandVid"
+                            }, void 0, false, {
+                                fileName: "src/components/account.jsx",
+                                lineNumber: 27,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                className: "firstchild",
+                                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                    href: "#History",
+                                    children: "History"
+                                }, void 0, false, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 29,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "src/components/account.jsx",
+                                lineNumber: 28,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                    className: "active",
+                                    href: "./Account",
+                                    children: "Account"
+                                }, void 0, false, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 32,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "src/components/account.jsx",
+                                lineNumber: 31,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                    href: "#Homepage",
+                                    children: "Home"
+                                }, void 0, false, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 37,
+                                    columnNumber: 15
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "src/components/account.jsx",
+                                lineNumber: 36,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "src/components/account.jsx",
+                        lineNumber: 26,
+                        columnNumber: 11
+                    }, this)
+                }, void 0, false, {
+                    fileName: "src/components/account.jsx",
+                    lineNumber: 25,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+                    className: "dropdown",
+                    children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+                        className: "dropdown-content",
+                        children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("ul", {
+                            children: [
+                                /*#__PURE__*/ _jsxDevRuntime.jsxDEV("img", {
+                                    onClick: btnfunction,
+                                    className: "dropbtn",
+                                    src: _morePngDefault.default
+                                }, void 0, false, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 44,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ _jsxDevRuntime.jsxDEV("h1", {
+                                    children: "RandVid"
+                                }, void 0, false, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 45,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+                                    id: "tdropdown",
+                                    children: [
+                                        /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                            className: "firstchild",
+                                            children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                                href: "#History",
+                                                children: "History"
+                                            }, void 0, false, {
+                                                fileName: "src/components/account.jsx",
+                                                lineNumber: 48,
+                                                columnNumber: 19
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "src/components/account.jsx",
+                                            lineNumber: 47,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                            children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                                href: "#Account",
+                                                children: "Account"
+                                            }, void 0, false, {
+                                                fileName: "src/components/account.jsx",
+                                                lineNumber: 51,
+                                                columnNumber: 19
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "src/components/account.jsx",
+                                            lineNumber: 50,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDevRuntime.jsxDEV("li", {
+                                            children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("a", {
+                                                className: "active",
+                                                href: "#Homepage",
+                                                children: "Home"
+                                            }, void 0, false, {
+                                                fileName: "src/components/account.jsx",
+                                                lineNumber: 54,
+                                                columnNumber: 19
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "src/components/account.jsx",
+                                            lineNumber: 53,
+                                            columnNumber: 17
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "src/components/account.jsx",
+                                    lineNumber: 46,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "src/components/account.jsx",
+                            lineNumber: 43,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "src/components/account.jsx",
+                        lineNumber: 42,
+                        columnNumber: 11
+                    }, this)
+                }, void 0, false, {
+                    fileName: "src/components/account.jsx",
+                    lineNumber: 41,
+                    columnNumber: 9
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "src/components/account.jsx",
+            lineNumber: 24,
+            columnNumber: 7
+        }, this)
+    }, void 0, false);
+}
+exports.default = account;
+
+  $parcel$ReactRefreshHelpers$f3bd.postlude(module);
+} finally {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+},{"react/jsx-dev-runtime":"iTorj","react":"21dqq","react-player":"6tM2f","../style/homepage.css":"lvjCu","../images/more.png":"dBBVC","../images/Like.png":"8cLJJ","../images/Dislike.png":"iCZKB","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"km3Ru"}],"lvjCu":[function() {},{}]},["kn9T2","7fmqN","8lqZg"], "8lqZg", "parcelRequirece05")
 
 //# sourceMappingURL=index.975ef6c8.js.map

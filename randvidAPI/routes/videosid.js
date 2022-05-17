@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const { google } = require("googleapis");
-const apiKey = "AIzaSyDROJ8DMpvGgkU2BZaRfHf0tqBRywq4hmk";
+const { apikey } = require("./Apikey.js");
 const youtube = google.youtube({
   version: "v3",
-  auth: apiKey,
+  auth: apikey,
 });
 
 router.get("/", async (req, res, next) => {

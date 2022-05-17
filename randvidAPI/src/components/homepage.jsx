@@ -4,9 +4,12 @@ import "../style/homepage.css";
 import img1 from "../images/more.png";
 import like from "../images/Like.png";
 import dislike from "../images/Dislike.png";
+import jsonfile from "./videosid.json";
+
 //could add a tutorial on how to use randvid but this video seems more fitting
 let linkres = "Z10iWqkOlW4";
 
+//This is just the navbar button for the phone version
 let i = 0;
 function btnfunction() {
   if (i <= 0) {
@@ -27,22 +30,30 @@ function Homepage() {
   const [link, setLink] = useState([]);
   const [localdata, setLocalData] = useState([]);
   const [history, setHistory] = useState([]);
+  const [check, setCheck] = useState();
 
   useEffect(() => {
+    const resetcheck = () => {
+      if (check >= 0) {
+        setCheck(0);
+        console.log("check has been reset");
+      }
+      resetcheck();
+    };
     const fetchData = async () => {
       //setting up the video ids
-      const res = await fetch("http://localhost:3000");
+      const res = await fetch("http://localhost:3000/videosid");
       const jsonRes = await res.json();
       setIds(jsonRes);
       //setting up the local database
       localStorage.setItem("VideosID", ids);
     };
 
-    const saveHistory = () => {
-      //We add in there the videos that have been watched
-      let historyData = localStorage.getItem("HistoryID");
-      historyData = historyData.split(",");
-      setHistory(historyData);
+    const localfetchData = () => {
+      //setting up the video ids
+      setIds(jsonfile);
+      //setting up the local database
+      localStorage.setItem("VideosID", ids);
     };
 
     const saveData = () => {
@@ -51,38 +62,67 @@ function Homepage() {
       data = data.split(",");
       setLocalData(data);
     };
-    if (localdata[0] == null) {
+    let item = localStorage.getItem("VideosID");
+    if (item.length == 0) {
       // if our local database is empty we fetch it from youtube
       fetchData();
       saveData();
       console.log("Fetching data from youtube...");
     } else {
       //else we just keep using our local database
+      localfetchData();
+      saveData();
       console.log("Using local data for video id's...");
     }
-  });
+    const checkHistory = () => {
+      localhistory = localStorage.getItem("HistoryID");
+      if (localhistory != "") {
+        localhistory = localhistory.split(",");
+        setHistory(localhistory);
+      }
+    };
+    checkHistory();
+  }, [check]);
 
+  const checklocal = () => {
+    let index = 0;
+    if (localStorage.getItem("VideosID").length == 0) {
+      console.log("Local database is now empty");
+      setCheck((index += 1));
+    }
+  };
   const selectRandom = () => {
     let result = 0;
     // result is initiazied, we loop it until it reaches a certain number
-    for (i = 0; i < randNum(50); i++) {
+    for (i = 0; i < randNum(localdata.length); i++) {
       result = i;
     }
     //and we give the string of id it wants
     linkres = localdata[result];
     //and we delete it from the local database and add it to our history.
-    let historydata = [];
-    historydata == historydata.push(localdata[result]);
-    console.log(historydata);
-    localStorage.setItem("HistoryID", historydata);
-    console.log("deleted", localdata[result]);
+    setLocalData(remove(localdata, linkres));
+    localStorage.setItem("VideosID", localdata);
+    addHistory(localdata[result]);
+    checklocal();
     setLink(linkres);
+  };
+
+  function remove(arr, value) {
+    return arr.filter(function (ele) {
+      return ele != value;
+    });
+  }
+
+  const addHistory = (data, tempHistory = []) => {
+    tempHistory.push(data);
+    setHistory([...history, ...tempHistory]);
+    localStorage.setItem("HistoryID", history);
+    localStorage.getItem("HistoryID");
   };
 
   function testbutton() {
     //this was supposed to be a test but oh well
     selectRandom();
-    console.log(linkres);
   }
 
   return (
@@ -96,7 +136,7 @@ function Homepage() {
               <a href="#History">History</a>
             </li>
             <li>
-              <a href="#Account">Account</a>
+              <a href="">Account</a>
             </li>
             <li>
               <a className="active" href="#Homepage">
