@@ -7,13 +7,13 @@ const youtube = google.youtube({
   version: "v3",
   auth: apikey,
 });
-
 router.get("/", async (req, res, next) => {
   try {
     const response = await youtube.search.list({
       part: "snippet",
-      q: "animal cat memes funny",
+      relatedToVideoId: "TeZPxrkkcA4",
       type: "video",
+      regionCode:'US',
       videoDuration: "short",
       maxResults: "50",
     });
