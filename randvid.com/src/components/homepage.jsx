@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
+import Navbar from "./Navbar";
 import ReactPlayer from "react-player";
 import "../style/homepage.css";
-import img1 from "../images/more.png";
 import like from "../images/Like.png";
 import dislike from "../images/Dislike.png";
 //import jsonfile from "./videosid.json";
 let VideoLink = "Z10iWqkOlW4";
+let i = 0;
 //could add a tutorial on how to use randvid but this video seems more fitting
 
 //This is just the navbar button for the phone version
-let i = 0;
-function btnfunction() {
-  if (i <= 0) {
-    document.getElementById("tdropdown").style.display = "block";
-    i++;
-  } else if (i > 0) {
-    document.getElementById("tdropdown").style.display = "none";
-    i = 0;
-  }
-}
 
 function Homepage() {
   const [IDs, setIDs] = useState([]);
@@ -109,52 +100,7 @@ function Homepage() {
   }
   return (
     <>
-      {/*NAVBAR*/}
-      <nav>
-        <div id="normnav">
-          <ul>
-            <h1>RandVidz</h1>
-            <li className="firstchild">
-              <a href="#History">History</a>
-            </li>
-            <li>
-              <a href="#Account">Account</a>
-            </li>
-            <li>
-              <a className="active" href="#Homepage">
-                Home
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="dropdown">
-          <div className="dropdown-content">
-            <ul>
-              <img
-                onClick={btnfunction}
-                className="dropbtn"
-                src={img1}
-                alt="NavBar Button"
-              ></img>
-              <h1>RandVidz</h1>
-              <div id="tdropdown">
-                <li className="firstchild">
-                  <a href="#History">History</a>
-                </li>
-                <li>
-                  <a href="#Account">Account</a>
-                </li>
-                <li>
-                  <a className="active" href="#Homepage">
-                    Home
-                  </a>
-                </li>
-              </div>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      {/*END NAV*/}
+      <Navbar />
       {/*BODY */}
       <div className="flex-content">
         <div className="reminder">
